@@ -43,6 +43,25 @@ function Dashboard() {
       .catch((error) => console.error("Error adding partner:", error));
   };
 
+  const updatePartner = (updatedPartner) => {
+    fetch(`http://localhost:4000/${updatedPartner.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedPartner),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setPartners((prevPartners) =>
+          prevPartners.map((partner) =>
+            partner.id === data.id ? data : partner
+          )
+        );
+      })
+      .catch((error) => console.error("Error updating partner:", error));
+  };
+
   return (
     <div className="page-container">
       <div id="centered">
@@ -54,6 +73,7 @@ function Dashboard() {
             key={partner.id}
             partnerData={partner}
             onDelete={() => deletePartner(partner.id)}
+            onUpdate={updatePartner}
           />
         ))}
       </div>

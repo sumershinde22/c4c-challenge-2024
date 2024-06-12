@@ -5,13 +5,13 @@
 */
 
 /* MainDisplay */
-
 #main-content {
   width: 1000px;
-  padding: 20px 30px;
+  padding: 20px 30px 50px; /* Added bottom padding */
   margin: auto;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 #main-partners-grid {
@@ -19,35 +19,31 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-
   gap: 25px;
 }
 
 h1.title {
   text-align: center;
   font-size: 24pt;
-
   padding-bottom: 25px;
 }
 
 /* PartnerTile */
-
 .partner-tile {
   width: 450px;
   height: 500px;
-
   display: flex;
   flex-direction: column;
-
-  border: 1px solid #3d3d3d;
+  border: 1px solid #ddd;
   border-radius: 12px;
-
   padding: 25px;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .partner-thumbnail {
+  max-width: 100%;
   max-height: 150px;
-  width: auto;
   object-fit: contain;
 }
 
@@ -55,22 +51,40 @@ h1.title {
   font-size: 0.9em;
 }
 
+.partner-tile button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.partner-tile button:hover {
+  background-color: #45a049;
+}
+
+.partner-tile button + button {
+  background-color: #f44336;
+  margin-left: 10px;
+}
+
+.partner-tile button + button:hover {
+  background-color: #d32f2f;
+}
+
 .delete-button {
   background-color: #ff4d4d;
   color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 1em;
-  margin-top: 10px;
 }
 
 .delete-button:hover {
   background-color: #ff1a1a;
 }
 
+/* AddPartnerForm */
 .add-partner-form {
+  width: 400px;
   border: 1px solid #3d3d3d;
   border-radius: 12px;
   padding: 20px;
@@ -80,7 +94,6 @@ h1.title {
   gap: 10px;
   align-items: center;
   justify-content: space-between;
-  width: 400px;
 }
 
 .add-partner-form label {
@@ -90,7 +103,8 @@ h1.title {
   width: 45%;
 }
 
-.add-partner-form input[type="text"] {
+.add-partner-form input[type="text"],
+.add-partner-form input[type="checkbox"] {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -102,23 +116,44 @@ h1.title {
 }
 
 .add-partner-form button {
+  width: 100px;
+  padding: 10px 20px;
   background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 10px 20px;
   cursor: pointer;
   font-size: 1em;
-  margin-top: 10px;
-  width: 100px;
 }
 
 .add-partner-form button:hover {
   background-color: #45a049;
 }
 
+/* Centering Container */
 #centered {
   display: flex;
-  flex-direction: column; /* Adjust if needed */
-  align-items: center; /* Center content horizontally if required */
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Edit Form */
+.edit-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-form label {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-form input[type="text"],
+.edit-form input[type="checkbox"] {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
 }

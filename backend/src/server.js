@@ -44,6 +44,21 @@ app.post("/", async (req, res) => {
   }
 });
 
+app.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, description, thumbnailUrl, active } = req.body;
+  const { data, error } = await supabase
+    .from("partners")
+    .update({ name, description, thumbnailUrl, active })
+    .eq("id", id)
+    .select("*");
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json(data[0]);
+  }
+});
+
 // Delete a partner by ID
 app.delete("/:id", async (req, res) => {
   const { id } = req.params;
