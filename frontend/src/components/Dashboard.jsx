@@ -1,16 +1,21 @@
 import { useState, useEffect } from "react";
 import PartnerTile from "./PartnerTile";
 import AddPartnerForm from "./AddPartnerForm.jsx";
+import SearchForm from "./SearchForm.jsx"; // Import SearchForm
 
 function Dashboard() {
   const [partners, setPartners] = useState([]);
+  const [filteredPartners, setFilteredPartners] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:4000", {
       method: "GET",
     })
       .then((res) => res.json())
-      .then((data) => setPartners(data))
+      .then((data) => {
+        setPartners(data);
+        setFilteredPartners(data);
+      })
       .catch((error) => console.error("Error fetching partner data:", error));
   }, []);
 
@@ -21,6 +26,9 @@ function Dashboard() {
       .then((res) => {
         if (res.ok) {
           setPartners((prevPartners) =>
+            prevPartners.filter((partner) => partner.id !== id)
+          );
+          setFilteredPartners((prevPartners) =>
             prevPartners.filter((partner) => partner.id !== id)
           );
         } else {
@@ -39,7 +47,10 @@ function Dashboard() {
       body: JSON.stringify(newPartner),
     })
       .then((res) => res.json())
-      .then((data) => setPartners((prevPartners) => [...prevPartners, data]))
+      .then((data) => {
+        setPartners((prevPartners) => [...prevPartners, data]);
+        setFilteredPartners((prevPartners) => [...prevPartners, data]);
+      })
       .catch((error) => console.error("Error adding partner:", error));
   };
 
@@ -58,17 +69,34 @@ function Dashboard() {
             partner.id === data.id ? data : partner
           )
         );
+        setFilteredPartners((prevPartners) =>
+          prevPartners.map((partner) =>
+            partner.id === data.id ? data : partner
+          )
+        );
       })
       .catch((error) => console.error("Error updating partner:", error));
+  };
+
+  const searchPartners = ({ title, active }) => {
+    setFilteredPartners(
+      partners.filter(
+        (partner) =>
+          (!title ||
+            partner.name.toLowerCase().includes(title.toLowerCase())) &&
+          (active === "" || partner.active === (active === "true"))
+      )
+    );
   };
 
   return (
     <div className="page-container">
       <div id="centered">
         <AddPartnerForm onAdd={addPartner} />
+        <SearchForm onSearch={searchPartners} />
       </div>
       <div id="main-partners-grid">
-        {partners.map((partner) => (
+        {filteredPartners.map((partner) => (
           <PartnerTile
             key={partner.id}
             partnerData={partner}
