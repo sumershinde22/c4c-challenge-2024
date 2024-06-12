@@ -1,31 +1,15 @@
 import express from "express";
-import { v4 as uuidv4 } from "uuid";
+import { createClient } from "@supabase/supabase-js";
 
 const app = express();
 const port = 4000;
 
-// Some partner data
-const partners = {
-  sftt: {
-    thumbnailUrl:
-      "https://c4cneu-public.s3.us-east-2.amazonaws.com/Site/sfft-project-page.png",
-    name: "Speak For The Trees",
-    active: false,
-    description:
-      "Speak for the Trees Boston aims to improve the size and health of the urban forest in the greater Boston area, with a focus on under-served and under-canopied neighborhoods. They work with volunteers to inventory (collect data) trees, plant trees, and educate those about trees. C4C has built a tree stewardship application for SFTT that allows users to participate in conserving Boston's urban forest. Across Boston, hundreds of trees have been adopted and cared for.",
-  },
-};
+const supabaseUrl = "https://ocrwzxxhochqpdwirxwv.supabase.co";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnd6eHhob2NocXBkd2lyeHd2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxODIxNjUyNSwiZXhwIjoyMDMzNzkyNTI1fQ.14-hM_4aAhquUPrvQG0HvYTGfBl9AHPaQCnE8I8Q5f8";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-/* 
-  APPLICATION MIDDLEWARE
-  This section contains some server configuration.
-  You will likely not need to change anything here to meet the requirements.
-  (but you are welcome to, if you'd like)
-*/
-
-// Parse request bodies as JSON
 app.use(express.json());
-// Enable CORS for the frontend so it can call the backend
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
   res.header(
@@ -36,32 +20,41 @@ app.use((req, res, next) => {
   next();
 });
 
-/*
-  APPLICATION ROUTES
-*/
-
-app.get("/", (req, res) => {
-  res.status(200).send(partners);
-});
-
-app.post("/", (req, res) => {
-  const key = uuidv4();
-  const newPartner = req.body;
-  partners[key] = newPartner;
-  res.status(201).send({ key, partner: newPartner });
-});
-
-app.delete("/:key", (req, res) => {
-  const { key } = req.params;
-  if (partners[key]) {
-    delete partners[key];
-    res.status(200).send({ message: "Partner deleted successfully" });
+// Get all partners
+app.get("/", async (req, res) => {
+  const { data, error } = await supabase.from("partners").select("*");
+  if (error) {
+    res.status(500).json({ error });
   } else {
-    res.status(404).send({ message: "Partner not found" });
+    res.status(200).json(data);
   }
 });
 
-// Start the backend
+// Add a new partner
+app.post("/", async (req, res) => {
+  const { name, description, thumbnailUrl, active } = req.body;
+  const { data, error } = await supabase
+    .from("partners")
+    .insert([{ name, description, thumbnailUrl, active }])
+    .select("*");
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(201).json(data[0]);
+  }
+});
+
+// Delete a partner by ID
+app.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { error } = await supabase.from("partners").delete().eq("id", id);
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: "Partner deleted successfully" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Express server starting on port ${port}!`);
 });

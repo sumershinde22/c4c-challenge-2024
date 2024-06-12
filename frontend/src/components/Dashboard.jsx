@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import PartnerTile from "./PartnerTile";
 import AddPartnerForm from "./AddPartnerForm.jsx";
+
 function Dashboard() {
-  const [partners, setPartners] = useState({});
+  const [partners, setPartners] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:4000", {
@@ -13,17 +14,15 @@ function Dashboard() {
       .catch((error) => console.error("Error fetching partner data:", error));
   }, []);
 
-  const deletePartner = (key) => {
-    fetch(`http://localhost:4000/${key}`, {
+  const deletePartner = (id) => {
+    fetch(`http://localhost:4000/${id}`, {
       method: "DELETE",
     })
       .then((res) => {
         if (res.ok) {
-          setPartners((prevPartners) => {
-            const updatedPartners = { ...prevPartners };
-            delete updatedPartners[key];
-            return updatedPartners;
-          });
+          setPartners((prevPartners) =>
+            prevPartners.filter((partner) => partner.id !== id)
+          );
         } else {
           console.error("Failed to delete partner");
         }
@@ -40,26 +39,21 @@ function Dashboard() {
       body: JSON.stringify(newPartner),
     })
       .then((res) => res.json())
-      .then((data) => {
-        setPartners((prevPartners) => ({
-          ...prevPartners,
-          [data.key]: data.partner,
-        }));
-      })
+      .then((data) => setPartners((prevPartners) => [...prevPartners, data]))
       .catch((error) => console.error("Error adding partner:", error));
   };
 
   return (
-    <div id="main-content">
+    <div className="page-container">
       <div id="centered">
         <AddPartnerForm onAdd={addPartner} />
       </div>
       <div id="main-partners-grid">
-        {Object.entries(partners).map(([key, partnerData]) => (
+        {partners.map((partner) => (
           <PartnerTile
-            key={key}
-            partnerData={partnerData}
-            onDelete={() => deletePartner(key)}
+            key={partner.id}
+            partnerData={partner}
+            onDelete={() => deletePartner(partner.id)}
           />
         ))}
       </div>
