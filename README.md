@@ -26,7 +26,7 @@ The application is a partnership management dashboard that allows users to:
 - **Delete** partners to remove them from the system.
 - **Search** for partners based on title and active status.
 
-The application is built with a React frontend and an Express backend. Supabase is used as the database for storing partnership information.
+The application is built with a React frontend and an Express backend. Supabase is used as the database.
 
 #### 2. **Frontend Structure**
 
